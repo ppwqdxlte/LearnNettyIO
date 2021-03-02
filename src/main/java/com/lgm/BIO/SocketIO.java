@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
  * 由于accept()是个阻塞点，read()又是个阻塞点
  * 为了继续执行，简单模拟实现了【最早的BIO模型，每个连接对应一个线程】
  */
-public class ServerSocketTest {
+public class SocketIO {
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
         ServerSocket serverSocket = null;
