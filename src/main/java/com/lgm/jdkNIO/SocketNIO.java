@@ -35,7 +35,7 @@ public class SocketNIO {
         List<SocketChannel> channels = new LinkedList<>();
 
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress(9090));
+        serverSocketChannel.bind(new InetSocketAddress(9089));
         serverSocketChannel.configureBlocking(false);//false-NIO;true-BIO
 
         while (true){

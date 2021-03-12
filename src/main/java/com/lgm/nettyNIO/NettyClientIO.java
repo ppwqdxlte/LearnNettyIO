@@ -10,8 +10,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * @author:李罡毛
  * @date:2021/3/6 18:08
@@ -23,7 +21,7 @@ public class NettyClientIO {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(worker)
                     .channel(NioSocketChannel.class)
-                    .remoteAddress("localhost",9093)
+                    .remoteAddress("localhost",8889)
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
@@ -34,7 +32,7 @@ public class NettyClientIO {
                     });
             ChannelFuture syncConn = bootstrap.connect().sync();
             Channel client = syncConn.channel();
-            System.out.println(client);
+//            System.out.println(client);
             ByteBuf byteBuf = Unpooled.copiedBuffer("Hello world!".getBytes());//客户端说了一句就疯狂来往输出
             client.writeAndFlush(byteBuf).sync();
 
