@@ -17,18 +17,19 @@ public class Client_future {
     public static void main(String[] args) {
         EventLoopGroup group = new NioEventLoopGroup(1);
         Bootstrap bootstrap = new Bootstrap();
-        ChannelFuture channelFuture = bootstrap.group(group)
+        try {
+            ChannelFuture channelFuture = bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .handler(new ClientChannelInitializer())
-                .connect("localhost", 8888);
+                .connect("localhost", 8888)
+                .sync();
 
-        channelFuture.addListener((future)->{
-            if (!future.isSuccess()) System.out.println("Not connected!!");
-            else System.out.println("Connected successfully!!");
-        });
+            channelFuture.addListener((future)->{
+                if (!future.isSuccess()) System.out.println("Not connected!!");
+                else System.out.println("Connected successfully!!");
+            });
 
-        try {
-            channelFuture.sync();
+            channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

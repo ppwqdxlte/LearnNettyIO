@@ -20,7 +20,8 @@ public class Client {
                     .channel(NioSocketChannel.class)//Netty也可以实现阻塞版，修改一下channel传参类型即可
                     .handler(new ClientChannelInitializer())
                     .connect("127.0.0.1",8888)
-                    .sync();
+                    .sync()//只有成功连接才继续往下执行，第一个sync是对connect的阻塞！
+            .channel().closeFuture().sync();//一直等待close()才会继续，否则一直阻塞，这样客户端才能保持连接
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
