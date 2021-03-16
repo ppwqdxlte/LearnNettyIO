@@ -35,5 +35,7 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel>{
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         System.out.println(socketChannel);
+        ChannelPipeline pipeline = socketChannel.pipeline();
+        pipeline.addLast(new ClientChannelHandler());
     }
 }

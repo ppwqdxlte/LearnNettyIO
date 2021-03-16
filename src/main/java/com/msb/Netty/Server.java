@@ -69,7 +69,15 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{//SimpleChannelInb
         if (cause instanceof IllegalReferenceCountException) {
             System.out.println("不处理了");
         }else {
-            System.out.println("也不知道啥问题，出在哪了，，"+cause.getCause());
+            System.out.println("也不知道啥问题，出在哪了，，"+cause);
+        }
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        if (!ctx.channel().isActive()) {
+            ctx.channel().close();
+            System.out.println(ctx.channel().remoteAddress()+"shut down!");
         }
     }
 
