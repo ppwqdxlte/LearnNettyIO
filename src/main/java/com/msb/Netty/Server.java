@@ -71,6 +71,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{//SimpleChannelInb
         }else {
             System.out.println("也不知道啥问题，出在哪了，，"+cause);
         }
+        ctx.close();//必须关闭掉
     }
 
     @Override
