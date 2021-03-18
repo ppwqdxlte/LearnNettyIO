@@ -1,4 +1,4 @@
-package com.msb.Netty;
+package com.tankNettyStudy.s1;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
