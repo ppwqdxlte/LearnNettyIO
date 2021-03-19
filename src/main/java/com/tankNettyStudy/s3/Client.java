@@ -10,6 +10,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
 
+import java.awt.*;
+
 /**
  * @author:李罡毛
  * @date:2021/3/17 15:13
@@ -86,6 +88,9 @@ class ClientChannelHandler extends ChannelInboundHandlerAdapter{
         byteBuf.getBytes(byteBuf.readerIndex(),bytes);
         System.out.println(ctx.channel().remoteAddress()+"说："+new String(bytes));
         if (byteBuf!=null&&byteBuf.refCnt()>0) ReferenceCountUtil.release(msg);
+
+        //服务器消息显示在ClientFrame上，实现简单聊天功能
+        ClientFrame.INSTANCE.displayInTextArea(bytes);
     }
 
 }

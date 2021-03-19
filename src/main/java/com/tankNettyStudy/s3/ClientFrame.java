@@ -13,13 +13,16 @@ import java.awt.event.WindowEvent;
  * 问题来了，TextField输入内容怎么发送给服务器呢？
  * 1.首先获取Client的Channel对象，要通过channel才能写给Server
  * 2.而ClientFrame要想把用户输入发送给Channel，需要Client暴露"接口"给ClientFrame
+ * 3.单粒化ClientFrame
  */
 public class ClientFrame extends Frame {
+
+    public static final ClientFrame INSTANCE = new ClientFrame();
 
     private volatile TextArea textArea = new TextArea();
     private volatile TextField textField = new TextField();
 
-    private Client client = null;
+    private Client client;
 
     private ClientFrame(){
         this.setSize(800,600);
@@ -50,6 +53,10 @@ public class ClientFrame extends Frame {
     }
 
     public static void main(String[] args) {
-        new ClientFrame().start();
+        ClientFrame.INSTANCE.start();
+    }
+
+    public void displayInTextArea(byte[] bytes) {
+        textArea.setText(textArea.getText()+System.lineSeparator()+new String(bytes));
     }
 }
