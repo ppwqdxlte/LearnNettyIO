@@ -41,7 +41,7 @@ public class ClientFrame extends Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 client.sentTextToServer(textField.getText());
-                textArea.setText(textArea.getText()+textField.getText());
+//                textArea.setText(textArea.getText()+textField.getText()); //注释掉，省得重复显示
                 textField.setText("");
             }
         });

@@ -29,9 +29,11 @@ public class Client {
             channelFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                    if (channelFuture.isSuccess()) System.out.println("Connect seccessfully!");
+                    if (channelFuture.isSuccess()) {
+                        System.out.println("Connect seccessfully!");
+                        channel = channelFuture.channel();
+                    }
                     else System.out.println("Fail to connect");
-                    channel = channelFuture.channel();
                 }
             }).sync();
             channelFuture.channel().closeFuture().sync();

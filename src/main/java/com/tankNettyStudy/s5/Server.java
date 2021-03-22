@@ -1,4 +1,4 @@
-package com.tankNettyStudy.s4;
+package com.tankNettyStudy.s5;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -16,37 +16,33 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
  * @author:李罡毛
- * @date:2021/3/18 22:10
+ * @date:2021/3/22 10:09
  */
 public class Server {
 
-    protected static ChannelGroup clients = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-
-    protected static ServerChannel serverChannel;
+    public static ChannelGroup clients = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static Channel channel;
 
     public void start(){
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup(2);
-
         ServerBootstrap serverBootstrap = new ServerBootstrap();
-
         try {
             ChannelFuture channelFuture = serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                .handler(new ServerChannelInitializer())
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        ChannelPipeline pipeline = socketChannel.pipeline();
-                        pipeline.addLast(new ServerChildHandler());
-                        System.out.println("initChildChannel()--->>>" + pipeline.channel().remoteAddress());
-                    }
-                })
-                .option(ChannelOption.SO_BACKLOG, 1024)
-                .option(ChannelOption.SO_RCVBUF, 1024 * 256)
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .bind(8888).sync();
+                    .handler(new ServerChannelInitializer())
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            ChannelPipeline pipeline = socketChannel.pipeline();
+                            pipeline.addLast(new ServerChildChannelHandler());
+                            System.out.println("initChildChannel()--->>>" + pipeline.channel().remoteAddress());
+                        }
+                    }).option(ChannelOption.SO_BACKLOG, 1024)
+                    .option(ChannelOption.SO_RCVBUF, 1024 * 256)
+                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .bind(8888).sync();
 
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
@@ -58,7 +54,7 @@ public class Server {
     }
 
     public void shutDown(){
-        serverChannel.close();
+        channel.close();
         System.exit(0);
     }
 }
@@ -66,13 +62,14 @@ public class Server {
 class ServerChannelInitializer extends ChannelInitializer<ServerChannel>{
 
     @Override
-    protected void initChannel(ServerChannel channel) throws Exception {
+    protected void initChannel(ServerChannel serverChannel) throws Exception {
+        Server.channel = serverChannel;
         System.out.println("Server is started!");
-        Server.serverChannel = channel;
+        ServerFrame.INSTANCE.updateTaLeft(("Server is started!"+System.lineSeparator()+serverChannel).getBytes());
     }
 }
 
-class ServerChildHandler extends ChannelInboundHandlerAdapter{//SimpleChannelInboundHandler Codec两个结合有泛型
+class ServerChildChannelHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         ByteBuf byteBuf = Unpooled.copiedBuffer("Hello client,I'm Server!".getBytes());
@@ -110,6 +107,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{//SimpleChannelInb
             System.out.println(ctx.channel().remoteAddress()+"说："+new String(bytes).strip());
             //哪个客户端有消息，挨着排儿转发出去
             Server.clients.writeAndFlush(byteBuf);
+            ServerFrame.INSTANCE.updateTaRight(bytes);
         } finally {
             if (byteBuf!=null && byteBuf.refCnt()>0) {
                 ReferenceCountUtil.release(byteBuf);//System.out.println(byteBuf.refCnt());//0  打印出来了，确实释放了System.out.println("------");
